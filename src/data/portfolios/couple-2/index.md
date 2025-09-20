@@ -1,6 +1,6 @@
 ---
-title: A beachside celebration
-description: The sandy shores, kissed by gentle waves, provided a serene backdrop for your beach wedding.
+title: Where fashion meets art
+description: Style is a way to say who you are without speaking.
 heroImage: ./couple-3-square.jpg
 date: "Jun 12 2024"
 location: Miami, Florida

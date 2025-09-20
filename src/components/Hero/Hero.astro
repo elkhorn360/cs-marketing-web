@@ -1,52 +1,75 @@
 ---
 /**
- * * Hero with background image
- * You'll want a mobile image, and a desktop image for this.
+ * * Hero with background image carousel
+ * Cycles through multiple images every 2 seconds
  */
 
 import Button from "@components/Button/Button.astro";
-import heroImage from "@images/hero-bg-min.jpg";
-import heroImageMobile from "@images/hero-bg-min.jpg";
 import { Image } from "astro:assets";
+
+// Import your hero images - add as many as you want
+import heroImage1 from "@images/hero/hero1.jpg";
+import heroImage2 from "@images/hero/hero2.jpg";
+import heroImage3 from "@images/hero/hero3.jpg";
+
+// Mobile versions
+import heroImageMobile1 from "@images/hero/hero1.jpg";
+import heroImageMobile2 from "@images/hero/hero2.jpg";
+import heroImageMobile3 from "@images/hero/hero3.jpg";
+
+// Array of image pairs (desktop, mobile)
+const heroImages = [
+	{ desktop: heroImage1, mobile: heroImageMobile1 },
+	{ desktop: heroImage2, mobile: heroImageMobile2 },
+	{ desktop: heroImage3, mobile: heroImageMobile3 },
+];
 ---
 
 <section id="hero" class="relative z-10 flex min-h-[100lvh] w-full">
-	<!-- background image -->
+	<!-- background image carousel -->
 	<div class="absolute -z-10 h-full min-h-full w-full overflow-hidden">
-		<div class="absolute inset-0 bg-black/10"></div>
+		<div class="absolute inset-0 bg-black/10 z-10"></div>
 
-		<Image
-			src={heroImage}
-			class="hidden h-auto min-h-full w-full object-cover object-bottom sm:block"
-			alt="wedding"
-			aria-hidden="true"
-			loading="eager"
-			height={1400}
-		/>
-		<Image
-			src={heroImageMobile}
-			class="h-auto min-h-full w-full object-cover sm:hidden"
-			alt="wedding"
-			aria-hidden="true"
-			loading="eager"
-			width={1200}
-		/>
+		{heroImages.map((imageSet, index) => (
+			<div 
+				class={`hero-slide absolute inset-0 transition-opacity duration-1000 ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
+				data-slide={index}
+			>
+				<!-- Desktop image -->
+				<Image
+					src={imageSet.desktop}
+					class="hidden h-auto min-h-full w-full object-cover object-bottom sm:block"
+					alt="wedding"
+					aria-hidden="true"
+					loading={index === 0 ? "eager" : "lazy"}
+					height={1400}
+				/>
+				<!-- Mobile image -->
+				<Image
+					src={imageSet.mobile}
+					class="h-auto min-h-full w-full object-cover sm:hidden"
+					alt="wedding"
+					aria-hidden="true"
+					loading={index === 0 ? "eager" : "lazy"}
+					width={1200}
+				/>
+			</div>
+		))}
 	</div>
 
 	<!-- hero items -->
-	<div class="site-container relative w-full gap-10 py-44 text-center md:py-52 md:text-left">
+	<div class="site-container relative w-full gap-10 py-44 text-center md:py-52 md:text-left z-20">
 		<!-- Hero text -->
 		<div class="text-base-50 my-auto mr-auto max-w-[800px] flex-col">
 			<h1
 				class="font-heading-1 text-4xl font-semibold text-pretty drop-shadow-[0_2px_2px_rgba(0,0,0,0.4)] md:text-7xl md:leading-tight"
 			>
-				California Wedding Photography
+				Creative Shutter Productions
 			</h1>
 			<p
 				class="mt-8 text-lg tracking-widest text-pretty drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)] md:max-w-[550px] md:text-2xl"
 			>
-				Transform your wedding moments into lasting memories amidst California's majestic
-				landscapes.
+				Turning life’s fleeting moments into timeless art.
 			</p>
 			<div class="mt-10 flex flex-wrap justify-center gap-4 md:justify-start">
 				<Button
@@ -60,4 +83,75 @@ import { Image } from "astro:assets";
 			</div>
 		</div>
 	</div>
+
+	<!-- Carousel indicators (optional) -->
+	<div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-30">
+		{heroImages.map((_, index) => (
+			<button
+				class={`carousel-dot w-3 h-3 rounded-full transition-all duration-300 ${index === 0 ? 'bg-white' : 'bg-white/50'}`}
+				data-slide={index}
+				aria-label={`Go to slide ${index + 1}`}
+			>
+			</button>
+		))}
+	</div>
 </section>
+
+<script>
+	// Hero image carousel functionality
+	document.addEventListener('DOMContentLoaded', () => {
+		const slides = document.querySelectorAll('.hero-slide');
+		const dots = document.querySelectorAll('.carousel-dot');
+		let currentSlide = 0;
+		let carouselInterval;
+
+		function showSlide(index) {
+			// Hide all slides
+			slides.forEach((slide, i) => {
+				slide.classList.toggle('opacity-100', i === index);
+				slide.classList.toggle('opacity-0', i !== index);
+			});
+
+			// Update dots
+			dots.forEach((dot, i) => {
+				dot.classList.toggle('bg-white', i === index);
+				dot.classList.toggle('bg-white/50', i !== index);
+			});
+
+			currentSlide = index;
+		}
+
+		function nextSlide() {
+			const next = (currentSlide + 1) % slides.length;
+			showSlide(next);
+		}
+
+		function startCarousel() {
+			carouselInterval = setInterval(nextSlide, 3000); // 2 second interval
+		}
+
+		function stopCarousel() {
+			clearInterval(carouselInterval);
+		}
+
+		// Add click handlers for dots (optional manual control)
+		dots.forEach((dot, index) => {
+			dot.addEventListener('click', () => {
+				showSlide(index);
+				stopCarousel();
+				setTimeout(startCarousel, 1000); // Restart auto-play after 5 seconds
+			});
+		});
+
+		// // Pause on hover (optional)
+		// const heroSection = document.getElementById('hero');
+		// heroSection.addEventListener('mouseenter', stopCarousel);
+		// heroSection.addEventListener('mouseleave', startCarousel);
+
+		// Start the carousel
+		startCarousel();
+
+		// Cleanup on page unload
+		window.addEventListener('beforeunload', stopCarousel);
+	});
+</script>
