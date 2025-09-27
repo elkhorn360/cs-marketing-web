@@ -12,7 +12,7 @@ images:
     [./couple-9-3.jpg],
     [./cake-min-3.jpg, ./dress-min-3.jpg],
   ]
-order: 3
+order: 4
 ---
 
 This Malibu wedding was a breathtaking affair. The stunning mountain views provided a picturesque backdrop. The photographs beautifully captured the intimate moments, the vibrant energy, and the overall romantic ambiance of the day.
